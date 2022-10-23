@@ -32,22 +32,36 @@ export class HeroService {
   }
 
   getHeroes(): Observable<Hero[]> {
-    const heroes = this.httpClient.get<Hero[]>(this.heroesUrl)
+    const obs_heroes = this.httpClient.get<Hero[]>(this.heroesUrl)
       .pipe(
         tap(_ => this.log(`fetched heroes`)),
         catchError(this.handleError<Hero[]>('getHeroes', []))
       );
     this.log('fetched heroes');
-    return heroes;
+    return obs_heroes;
   }
 
   getHero(id: number): Observable<Hero> {
     const url = `${this.heroesUrl}/${id}`;
-    const hero = this.httpClient.get<Hero>(url)
+    const obs_hero = this.httpClient.get<Hero>(url)
       .pipe(
         tap(_ => this.log(`fetched hero id=${id}`)),
         catchError(this.handleError<Hero>(`getHero id=${id}`))
       );
-    return hero;
+    return obs_hero;
   }
+
+  updateHero(hero: Hero): Observable<any> {
+    const observable = this.httpClient.put(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap(_ => this.log(`updated hero id=$(hero.id)`)),
+      catchError(this.handleError<any>('updateHero'))
+    );
+
+    return observable;
+  }
+
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
+
 }
