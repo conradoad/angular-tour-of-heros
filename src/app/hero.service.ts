@@ -51,6 +51,10 @@ export class HeroService {
     return obs_hero;
   }
 
+  httpOptions = {
+    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
+  };
+
   updateHero(hero: Hero): Observable<any> {
     const observable = this.httpClient.put(this.heroesUrl, hero, this.httpOptions).pipe(
       tap(_ => this.log(`updated hero id=$(hero.id)`)),
@@ -60,8 +64,15 @@ export class HeroService {
     return observable;
   }
 
-  httpOptions = {
-    headers: new HttpHeaders({ 'Content-Type': 'application/json' })
-  };
+  addHero(hero: Hero): Observable<Hero> {
+    const observable = this.httpClient.post<Hero>(this.heroesUrl, hero, this.httpOptions).pipe(
+      tap((newHero: Hero) => this.log(`added hero w/ id=${newHero.id}`)),
+      catchError(this.handleError<Hero>('addHero'))
+    );
+
+    return observable;
+  }
+
+
 
 }
